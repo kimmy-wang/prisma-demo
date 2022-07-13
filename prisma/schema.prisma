@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Menu {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  v                  Int      @map("__v")
+  component          String?
+  createBy           User     @relation(name: "createBy", fields: [createById], references: [id])
+  createById         String   @map("createBy") @db.ObjectId
+  createdAt          DateTime @db.Date
+  hideChildrenInMenu Boolean?
+  hideInMenu         Boolean?
+  icon               String?
+  isDel              Int
+  lock               Boolean
+  name               String
+  parent             String?  @db.ObjectId
+  path               String
+  redirect           String?
+  target             String?
+  title              String?
+  updateBy           User     @relation(name: "updateBy", fields: [updateById], references: [id])
+  updateById         String   @map("updateBy") @db.ObjectId
+  updatedAt          DateTime @db.Date
+
+  @@map("menus")
+}
+
+model Permission {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  permission String
+  name       String
+  desc       String?
+  isDel      Int
+  createBy   User     @relation(name: "createBy", fields: [createById], references: [id])
+  createById String   @map("createBy") @db.ObjectId
+  createdAt  DateTime @db.Date
+  updateBy   User     @relation(name: "updateBy", fields: [updateById], references: [id])
+  updateById String   @map("updateBy") @db.ObjectId
+  updatedAt  DateTime @db.Date
+
+  @@index([permission], map: "permission_1")
+  @@map("permissions")
+}
+
+model Role {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  role       String
+  name       String
+  desc       String?
+  isDel      Int
+  createBy   User     @relation(name: "createBy", fields: [createById], references: [id])
+  createById String   @map("createBy") @db.ObjectId
+  createdAt  DateTime @db.Date
+  updateBy   User     @relation(name: "updateBy", fields: [updateById], references: [id])
+  updateById String   @map("updateBy") @db.ObjectId
+  updatedAt  DateTime @db.Date
+
+  @@index([role], map: "role_1")
+  @@map("roles")
+}
+
+model Token {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  v           Int      @map("__v")
+  blacklisted Boolean
+  createdAt   DateTime @db.Date
+  expires     DateTime @db.Date
+  token       String
+  type        String
+  updatedAt   DateTime @db.Date
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @map("user") @db.ObjectId
+
+  @@index([token], map: "token_1")
+  @@map("tokens")
+}
+
+model User {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  v               Int      @map("__v")
+  createBy        User     @relation(name: "createBy", fields: [createById], references: [id])
+  createById      String   @map("createBy") @db.ObjectId
+  createdAt       DateTime @db.Date
+  email           String   @unique(map: "email_1")
+  isDel           Int
+  isEmailVerified Boolean
+  name            String
+  password        String
+  role            Role     @relation(fields: [roleId], references: [id])
+  roleId          String   @map("role") @db.ObjectId
+  updateBy        User     @relation(name: "updateBy", fields: [updateById], references: [id])
+  updateById      String   @map("updateBy") @db.ObjectId
+  updatedAt       DateTime @db.Date
+
+  @@map("users")
+}
